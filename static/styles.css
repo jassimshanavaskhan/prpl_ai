@@ -1,0 +1,210 @@
+/* styles.css - Modern, Minimal Chat App Styling */
+
+/* Color Palette */
+:root {
+    /* Light Mode Colors */
+    --bg-primary: #f4f6f9;
+    --bg-secondary: #ffffff;
+    --text-primary: #1f2937;
+    --text-secondary: #4b5563;
+    --accent-primary: #3b82f6;
+    --accent-hover: #2563eb;
+    --border-color: #e5e7eb;
+
+    /* Dark Mode Colors */
+    --dark-bg-primary: #111827;
+    --dark-bg-secondary: #1f2937;
+    --dark-text-primary: #f9fafb;
+    --dark-text-secondary: #d1d5db;
+    --dark-accent-primary: #60a5fa;
+    --dark-accent-hover: #3b82f6;
+    --dark-border-color: #374151;
+}
+
+/* Base Styles */
+body {
+    font-family: 'Inter', 'system-ui', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+    background: linear-gradient(135deg, var(--bg-primary), #e6e9f0);
+    color: var(--text-primary);
+    transition: all 0.3s ease;
+}
+
+body.dark {
+    background: linear-gradient(135deg, var(--dark-bg-primary), #0f172a);
+    color: var(--dark-text-primary);
+}
+
+/* Sidebar Styles */
+.sidebar {
+    background-color: var(--bg-secondary);
+    border-color: var(--border-color);
+    transition: background-color 0.3s ease;
+}
+
+.dark .sidebar {
+    background-color: var(--dark-bg-secondary);
+    border-color: var(--dark-border-color);
+}
+
+/* Chat Message Styles */
+.message-animation > div {
+    max-width: 80%;
+    width: fit-content;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    padding: 12px 16px;
+    line-height: 1.5;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* User Message */
+.message-animation.justify-end > div {
+    background-color: var(--accent-primary);
+    color: white;
+    border-radius: 1rem;
+    border-top-right-radius: 0;
+}
+
+/* Assistant Message */
+.message-animation.justify-start > div {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    border-radius: 1rem;
+    border-top-left-radius: 0;
+    border: 1px solid var(--border-color);
+}
+
+.dark .message-animation.justify-start > div {
+    background-color: var(--dark-bg-secondary);
+    color: var(--dark-text-primary);
+    border-color: var(--dark-border-color);
+}
+
+/* Input Area */
+#chat-input {
+    background-color: var(--bg-secondary);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+.dark #chat-input {
+    background-color: var(--dark-bg-secondary);
+    border-color: var(--dark-border-color);
+    color: var(--dark-text-primary);
+}
+
+/* Send Button */
+#chat-button {
+    background-color: var(--accent-primary);
+    transition: background-color 0.3s ease;
+}
+
+#chat-button:hover {
+    background-color: var(--accent-hover);
+}
+
+.dark #chat-button {
+    background-color: var(--dark-accent-primary);
+}
+
+.dark #chat-button:hover {
+    background-color: var(--dark-accent-hover);
+}
+
+/* Animations and Transitions */
+@keyframes fadeIn {
+    from { 
+        opacity: 0; 
+        transform: translateY(10px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
+
+.message-animation {
+    animation: fadeIn 0.3s ease-out forwards;
+    display: flex;
+    max-width: 100%;
+    width: 100%;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .sidebar {
+        position: fixed;
+        left: -100%;
+        transition: left 0.3s ease-in-out;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+
+    .sidebar.open {
+        left: 0;
+    }
+}
+
+
+
+/* pre[class*="language-"] {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow-x: auto;
+    max-width: 100%;
+    line-height: 1.5;
+}
+
+code[class*="language-"] {
+    display: block;
+    word-break: break-word;
+    white-space: pre-wrap;
+    font-size: 0.9em;
+} */
+
+pre {
+    white-space: pre-wrap; /* Preserve line breaks */
+    word-wrap: break-word; /* Handle long words gracefully */
+    font-family: 'Courier New', Courier, monospace; /* Use a monospace font */
+}
+
+code {
+    white-space: pre-wrap;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+
+
+  /* .floating-controls button {
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    padding: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  } */
+
+  /* .floating-controls button:hover {
+    background-color: rgba(200, 200, 200, 0.8);
+  }
+ */
+
+
+  /* ------------------------------------- */
+
+  .floating-controls button {
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    padding: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .floating-controls button:hover {
+    background-color: rgba(200, 200, 200, 0.8);
+  }
+
+  /* Prevent drag interference with buttons */
+  .diagram-container {
+    cursor: grab; /* Indicate draggable area */
+  }
+
+  .diagram-container:active {
+    cursor: grabbing; /* Indicate active drag state */
+  }

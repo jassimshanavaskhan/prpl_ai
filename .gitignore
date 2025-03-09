@@ -1,0 +1,31 @@
+# Python virtual environments
+venv/
+deployment_env/
+env/
+.env/
+new_env/
+myenv/
+entity_responses/
+credentials.json
+
+# Jupyter Notebook files
+*.ipynb
+
+
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# Local configurations
+.env
+.vscode/
+.idea/
+
+# Log files
+*.log

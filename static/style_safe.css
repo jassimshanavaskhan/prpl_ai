@@ -1,0 +1,191 @@
+        /* Keep existing styles */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* .message-animation {
+            animation: fadeIn 0.3s ease-out forwards;
+        } */
+         /* ------------------------ */
+        .message-animation {
+            animation: fadeIn 0.3s ease-out forwards;
+            display: flex;
+            max-width: 100%;
+            width: 100%;
+        }
+
+        .message-animation > div {
+            max-width: 80%;
+            width: fit-content;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+        .message-animation.justify-end > div {
+            margin-left: auto;
+            background-color: #3B82F6; /* blue-500 */
+            color: white;
+            border-radius: 1rem;
+            border-top-right-radius: 0;
+        }
+
+        /* Assistant message */
+        .message-animation.justify-start > div {
+            margin-right: auto;
+            background-color: #F3F4F6; /* gray-100 */
+            color: #1F2937; /* gray-800 */
+            border-radius: 1rem;
+            border-top-left-radius: 0;
+        }
+
+        /* Dark mode adjustments */
+        .dark .message-animation.justify-start > div {
+            background-color: #374151; /* gray-700 */
+            color: white;
+        }
+
+        /* Code blocks within messages */
+        .message-animation .code-block {
+            max-width: 100%;
+            overflow-x: auto;
+        }
+
+         /* ------------------------ */
+
+        .mermaid-diagram-container {
+            max-width: 100%;
+            overflow-x: auto;
+        }
+
+        .mermaid svg {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* Mermaid Diagram Modal Styles */
+        .diagram-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .diagram-modal.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .diagram-modal-content {
+            background-color: white;
+            border-radius: 12px;
+            max-width: 90%;
+            max-height: 90%;
+            width: 800px;
+            position: relative;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+        }
+
+        .diagram-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .diagram-modal-body {
+            position: relative;
+            overflow: auto;
+            max-height: 70vh;
+            padding: 16px;
+        }
+
+        .diagram-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .diagram-zoom-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .diagram-zoom-btn {
+            background-color: #f3f4f6;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .diagram-zoom-btn:hover {
+            background-color: #e5e7eb;
+        }
+
+        .diagram-modal-content.dark {
+            background-color: #1f2937;
+            color: white;
+        }
+
+        .diagram-modal-header.dark {
+            border-bottom-color: #374151;
+        }
+
+        /* Draggable diagram styles */
+        .draggable {
+            cursor: move;
+        }
+
+        .diagram-container {
+            transition: transform 0.3s ease;
+            transform-origin: center;
+        }
+
+        /* Add styles for sidebar */
+        .sidebar-chat-item {
+            transition: all 0.2s ease-in-out;
+        }
+
+        .sidebar-chat-item:hover {
+            background-color: rgba(59, 130, 246, 0.1);
+        }
+
+        .sidebar-chat-item.active {
+            background-color: rgba(59, 130, 246, 0.2);
+            border-left: 3px solid #3B82F6;
+        }
+
+        /* Responsive sidebar */
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                left: -100%;
+                transition: left 0.3s ease-in-out;
+            }
+
+            .sidebar.open {
+                left: 0;
+            }
+
+            .sidebar-overlay {
+                display: none;
+            }
+
+            .sidebar-overlay.active {
+                display: block;
+            }
+        }
