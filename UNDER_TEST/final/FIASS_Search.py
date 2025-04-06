@@ -9,6 +9,8 @@ from collections import defaultdict
 import re
 from google.api_core.exceptions import ResourceExhausted
 import time
+import os
+import groq
 
 class SearchStrategy(Enum):
     VECTOR = auto()      # Pure vector similarity search
@@ -29,28 +31,107 @@ class SearchResult:
             self.score = float(self.score)
 
 class AdvancedCodeSearch:
-    def __init__(self, vector_store_manager, gemini_api_key=None):
+    # def __init__(self, vector_store_manager, gemini_api_key=None):
+    #     self.vector_store_manager = vector_store_manager
+    #     self.gemini_api_key = gemini_api_key
+    #     if gemini_api_key:
+    #         genai.configure(api_key=gemini_api_key)
+    #         self.model = genai.GenerativeModel("gemini-1.5-pro")
+    
+
+    # def generate_with_retry(self,prompt, max_retries=15, initial_delay=1):
+    #     retries = 0
+    #     while retries < max_retries:
+    #         try:
+    #             #return self.model.generate_content(prompt)
+    #             return self.model.generate_content(prompt)
+    #         except ResourceExhausted as e:
+    #             retries += 1
+    #             if retries >= max_retries:
+    #                 raise
+    #             # Exponential backoff
+    #             delay = initial_delay * (2 ** (retries - 1))
+    #             print(f"Rate limit hit, retrying in {delay} seconds...")
+    #             time.sleep(delay)
+
+    def __init__(self, vector_store_manager, gemini_api_key=None, groq_api_key=None):
         self.vector_store_manager = vector_store_manager
         self.gemini_api_key = gemini_api_key
+        self.groq_api_key = groq_api_key
+        
+        # Initialize Gemini if API key is provided
         if gemini_api_key:
             genai.configure(api_key=gemini_api_key)
             self.model = genai.GenerativeModel("gemini-1.5-pro")
+        
+        # Initialize Groq if API key is provided
+        if groq_api_key:
+            self.groq_client = groq.Client(api_key=groq_api_key)
+            # Default to a powerful model, but you can change as needed
+            self.groq_model = "llama3-70b-8192"
     
-
-    def generate_with_retry(self,prompt, max_retries=15, initial_delay=1):
+    def generate_with_retry(self, prompt, max_retries=15, initial_delay=1):
         retries = 0
+        use_fallback = False
+        
         while retries < max_retries:
             try:
-                #return self.model.generate_content(prompt)
-                return self.model.generate_content(prompt)
+                # Try with primary API (Gemini)
+                if not use_fallback:
+                    logger.info("Using Gemini API")
+                    return self.model.generate_content(prompt)
+                # Use fallback API (Groq)
+                else:
+                    logger.info("Using Groq API as fallback")
+                    if not hasattr(self, 'groq_client'):
+                        if not self.groq_api_key:
+                            raise ValueError("Groq API key not provided for fallback")
+                        self.groq_client = groq.Client(api_key=self.groq_api_key)
+                    
+                    # Call Groq API
+                    chat_completion = self.groq_client.chat.completions.create(
+                        model=self.groq_model,
+                        messages=[{"role": "user", "content": prompt}],
+                        temperature=0.7,
+                    )
+                    
+                    # Format response to match Gemini's format or create a compatible wrapper
+                    return self._format_groq_response(chat_completion)
+                    
             except ResourceExhausted as e:
                 retries += 1
+                logger.warning(f"Rate limit hit with Gemini API, attempt {retries}/{max_retries}")
+                
+                # Switch to fallback on first rate limit
+                if not use_fallback and self.groq_api_key:
+                    logger.info("Switching to Groq API fallback")
+                    use_fallback = True
+                    # Reset retry counter when switching to fallback
+                    retries = 0
+                    continue
+                
                 if retries >= max_retries:
                     raise
+                
                 # Exponential backoff
                 delay = initial_delay * (2 ** (retries - 1))
-                print(f"Rate limit hit, retrying in {delay} seconds...")
+                logger.info(f"Retrying in {delay} seconds...")
                 time.sleep(delay)
+    
+    def _format_groq_response(self, groq_response):
+        """Format Groq response to match Gemini's response format or create a compatible wrapper"""
+        # This is a simplified example - you'll need to adapt based on how you use the response
+        class GroqWrapper:
+            def __init__(self, response_text):
+                self.text = response_text
+                # Add more attributes as needed to match Gemini's response structure
+            
+            def __str__(self):
+                return self.text
+        
+        # Extract the content from Groq's response
+        content = groq_response.choices[0].message.content
+        return GroqWrapper(content)
 
     def search(self, query: str, strategy: SearchStrategy = SearchStrategy.VECTOR, 
                top_k: int = 10, threshold: float = 0.3) -> List[SearchResult]:
@@ -85,6 +166,7 @@ class AdvancedCodeSearch:
         all_results = []
         
         # Search in each vector store
+        logger.info(f"[PRPL_ASSIST_LOG] Searching in each vector store...")
         for store_type, store in self.vector_store_manager.vector_stores.items():
             if store is None:
                 continue

@@ -7,6 +7,10 @@ new_env/
 myenv/
 entity_responses/
 credentials.json
+code_chunks_vector_store/
+vector_stores/
+test/
+
 
 # Jupyter Notebook files
 *.ipynb
@@ -29,3 +33,7 @@ build/
 
 # Log files
 *.log
+app_new_Claude.py
+app_new_Claude2.py
+*SAFE*.py
+*.pkl

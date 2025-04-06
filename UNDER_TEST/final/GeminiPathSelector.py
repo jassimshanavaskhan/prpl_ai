@@ -13,6 +13,70 @@ class PathSelection:
     question_asked: str
     user_response: str
 
+from ContentGenerator import AdvancedContentGenerator, ModelConfig, ModelProvider
+import os
+# Define configurations
+# primary_config = ModelConfig(
+#     provider=ModelProvider.LMSTUDIO,
+#     model_name="gemini-1.5-pro",
+#     api_key=os.environ.get('GEMINI_API_KEY'),
+#     temperature=0.7
+# )
+primary_config = ModelConfig(
+    provider=ModelProvider.GEMINI,
+    model_name="gemini-1.5-pro",
+    api_key=os.environ.get('GEMINI_API_KEY'),
+    temperature=0.7
+)
+# primary_config = ModelConfig(
+#     provider=ModelProvider.LMSTUDIO,
+#     model_name="hermes-3-llama-3.1-8b",  # The model loaded in LM Studio 
+#     api_key="",  # Usually empty for local LM Studio
+#     base_url="http://127.0.0.1:1234/v1",  # Default LM Studio server URL
+#     temperature=0.7,
+#     max_tokens=1024
+# )
+
+# Define fallback models in order of preference
+fallback_configs = [
+    ModelConfig(
+        provider=ModelProvider.GROQ,
+        model_name="llama3-70b-8192",
+        api_key='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',
+        temperature=0.7
+    ),
+    ModelConfig(
+    provider=ModelProvider.GEMINI,
+    model_name="gemini-1.5-pro",
+    api_key=os.environ.get('GEMINI_API_KEY'),
+    temperature=0.7
+    ),
+    # ModelConfig(
+    #     provider=ModelProvider.LMSTUDIO,
+    #     model_name="deepseek-r1-distill-qwen-7b",  # The model loaded in LM Studio 
+    #     api_key="",  # Usually empty for local LM Studio
+    #     base_url="http://127.0.0.1:1234/v1",  # Default LM Studio server URL
+    #     temperature=0.7,
+    #     max_tokens=1024
+    # )
+    # ModelConfig(
+    #     provider=ModelProvider.ANTHROPIC,
+    #     model_name="claude-3-opus-20240229",
+    #     api_key=os.environ.get('ANTHROPIC_API_KEY'),
+    #     temperature=0.7
+    # )
+]
+
+# Initialize the generator
+content_generator = AdvancedContentGenerator(
+    primary_config=primary_config,
+    fallback_configs=fallback_configs,
+    default_max_retries=5,
+    initial_retry_delay=1.0
+)
+
+
+
 class GeminiPathSelector:
     def __init__(self, gemini_api_key: str):
         genai.configure(api_key=gemini_api_key)
@@ -319,7 +383,11 @@ class GeminiPathSelector:
             print("The prompt Chunk : ")
             print(prompt_chunk)
             #response = self.model.generate_content(prompt_chunk)
-            response = self.generate_with_retry(prompt_chunk)
+            #response = self.generate_with_retry(prompt_chunk)
+            response = content_generator.generate_content(
+                prompt=prompt_chunk,
+                json_response=False
+            )
             summarized_descriptions.append(response.text.strip())
 
         # **Combine Summaries**
@@ -344,7 +412,13 @@ class GeminiPathSelector:
         print("THe final Prompt : ")
         print(final_prompt)
         #final_response = self.model.generate_content(final_prompt)
-        final_response = self.generate_with_retry(final_prompt)
+        #final_response = self.generate_with_retry(final_prompt)
+        final_response = content_generator.generate_content(
+            prompt=final_prompt,
+            json_response=False
+        )
+        print("Type of Response : ",type(response))
+        print("Response : ",response)  # Look at the structure
         return final_response.text.strip()
 
 
@@ -390,7 +464,11 @@ class GeminiPathSelector:
         print("\n3. Created Prompt for Path Selection : ")
         print(prompt)
         #response = self.model.generate_content(prompt)
-        response = self.generate_with_retry(prompt)
+        #response = self.generate_with_retry(prompt)
+        response = content_generator.generate_content(
+            prompt=prompt,
+            json_response=False
+        )
         analysis = self._extract_json_from_response(response.text)
         print("\n4. Response for that Prompt : ")
         print("\n - Seleceted Path : ",analysis['selected_path_index'])
